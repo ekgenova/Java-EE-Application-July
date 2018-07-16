@@ -1,25 +1,71 @@
 package com.qa.service.repository;
 
-public class AccountMapRepository implements AccountRepository {
+import com.qa.constants.Constants;
+import com.qa.domain.Account;
+import com.qa.service.business.IAccountService;
+import com.qa.util.JSONUtil;
 
-	public String getAllAccounts() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
+import javax.transaction.Transactional.TxType;
 
-	public String createAccount(String accout) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+import java.util.HashMap;
+import java.util.Map;
 
-	public String updateAccount(Long id, String accountToUpdate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+@ApplicationScoped
+@Alternative
+public class AccountMapRepository implements IAccountRepository {
 
-	public String deleteAccount(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private Long ID;
+    private Map<Long, Account> accountMap;
 
+    @Inject
+    private JSONUtil util;
+
+    public AccountMapRepository(){
+        this.accountMap = new HashMap<>();
+        ID = 0L;
+    }
+
+    @Override
+    public String addAccount(String account){
+        ID++;
+        Account newAccount = util.getObjectForJson(account, Account.class);
+        newAccount.setId(ID);
+        accountMap.put(newAccount.getId(),newAccount);
+        return Constants.NEW_MESSAGE;
+    }
+
+    public Account findAccount(Long id){
+        return accountMap.get(id);
+    }
+
+    @Override
+    public String getAllAccounts(){
+        return util.getJSONForObject(accountMap.values());
+    }
+
+    @Override
+    public String deleteAccount(long id){
+        if (accountMap.containsKey(id)){
+            accountMap.remove(id);
+            return Constants.DELETE_MESSAGE;
+        }else {
+            return Constants.NO_EXIST;
+        }
+    }
+
+    @Override
+    public String updateAccount(long id, String account){
+        Account updatedAccount = util.getObjectForJson(account,Account.class);
+        updatedAccount.setId(id);
+        accountMap.put(id,updatedAccount);
+        return Constants.UPDATE_MESSAGE;
+    }
+    
+    @Override
+    public Account findAccount(long id) {
+    	return accountMap.get(id);
+    }
 }

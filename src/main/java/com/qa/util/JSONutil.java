@@ -1,20 +1,20 @@
 package com.qa.util;
 
-import java.util.Collection;
+import com.google.gson.Gson;
 
-import com.qa.domain.Account;
+public class JSONUtil {
 
-public class JSONutil {
+    private Gson gson;
 
-	public Account getObjectForJSON(String account, Class<Account> class1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public JSONUtil() {
+        this.gson = new Gson();
+    }
 
-	public String getJSONForObject(Collection<Account> accounts) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getJSONForObject(Object obj) {
+        return gson.toJson(obj);
+    }
 
+    public <T> T getObjectForJson(String jsonString, Class<T> class1) {
+        return gson.fromJson(jsonString, class1);
+    }
 }
-
